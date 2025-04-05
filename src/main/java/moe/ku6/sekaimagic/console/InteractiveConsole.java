@@ -49,6 +49,13 @@ public class InteractiveConsole {
         }
     }
 
+    public boolean Prompt(String prompt) {
+        var line = ReadBlocking("%s (y/n): ".formatted(prompt));
+        if (line == null || line.isEmpty()) return false;
+
+        return line.toLowerCase().startsWith("y");
+    }
+
     private void ConsoleLoop() {
         while (true) {
             try {
@@ -62,6 +69,7 @@ public class InteractiveConsole {
 
             } catch (UserInterruptException | EndOfFileException e) {
                 log.info("User exit.");
+                System.exit(0);
                 break;
             }
 

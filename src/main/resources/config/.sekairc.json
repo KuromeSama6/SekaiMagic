@@ -1,3 +1,16 @@
 {
-    "gameFilesPath": ""
+    "gameFilesPath": "",
+    "gamePackageName": "com.hermes.mk",
+    "adb": {
+        "autoConnect": [],
+        "inputDeviceName": ""
+    },
+    "autoplay": {
+        "randomization": {
+            "tapOffsetX": [0, 0],
+            "tapOffsetY": [0, 0],
+            "swipeDistance": [0, 0],
+            "swipeDuration": [30, 100]
+        }
+    }
 }

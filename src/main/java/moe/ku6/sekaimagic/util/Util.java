@@ -8,9 +8,12 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -102,5 +105,46 @@ public class Util {
             }
         }
         return fullWidth.toString();
+    }
+
+    public static <T> CompletableFuture<T> FromFuture(Future<T> future) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return future.get();
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    public static Map<String, Set<Integer>> ParseEventDevices(String data) {
+        Map<String, Set<Integer>> deviceEvents = new HashMap<>();
+
+        String[] lines = data.split("\n");
+        String currentDevice = null;
+        Set<Integer> currentEvents = null;
+
+        Pattern devicePattern = Pattern.compile("add device \\d+: (.+)");
+        Pattern eventCodePattern = Pattern.compile("\\s+([0-9a-fA-F]{4})\\s*:.*");
+
+        for (String line : lines) {
+            Matcher deviceMatcher = devicePattern.matcher(line);
+            if (deviceMatcher.find()) {
+                currentDevice = deviceMatcher.group(1).trim();
+                currentEvents = new HashSet<>();
+                deviceEvents.put(currentDevice, currentEvents);
+                continue;
+            }
+
+            if (currentDevice != null) {
+                Matcher eventMatcher = eventCodePattern.matcher(line);
+                if (eventMatcher.find()) {
+                    int code = Integer.parseInt(eventMatcher.group(1), 16);
+                    currentEvents.add(code);
+                }
+            }
+        }
+
+        return deviceEvents;
     }
 }

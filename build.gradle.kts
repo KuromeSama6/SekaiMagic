@@ -2,7 +2,6 @@ plugins {
     id("java")
     `java-library`
     `maven-publish`
-    id("com.gradleup.shadow") version "9.0.0-beta6"
 }
 
 repositories {
@@ -13,10 +12,12 @@ repositories {
 }
 
 group = "moe.ku6"
-version = "1.0-SNAPSHOT"
+version = "0.0.1"
 
 repositories {
     mavenCentral()
+    // jitpack.io
+    maven("https://jitpack.io")
 }
 
 dependencies {
@@ -41,11 +42,15 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     // https://mvnrepository.com/artifact/com.googlecode.lanterna/lanterna
 //    implementation("com.googlecode.lanterna:lanterna:3.1.3")
+    // https://mvnrepository.com/artifact/net.java.dev.jna/jna
+    implementation("net.java.dev.jna:jna:5.17.0")
+    // https://mvnrepository.com/artifact/io.appium/java-client
+    implementation("io.appium:java-client:9.4.0")
+    implementation("org.java-websocket:Java-WebSocket:1.6.0")
 
-    compileOnly("org.projectlombok:lombok:1.18.36")
+    implementation("com.github.vidstige:jadb:v1.2.1")
+
     annotationProcessor("org.projectlombok:lombok:1.18.36")
-
-    testCompileOnly("org.projectlombok:lombok:1.18.36")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.36")
 
     testImplementation(platform("org.junit:junit-bom:5.10.0"))

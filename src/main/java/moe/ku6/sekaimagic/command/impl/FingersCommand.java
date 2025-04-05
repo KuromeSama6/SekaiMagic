@@ -5,15 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import moe.ku6.sekaimagic.SekaiMagic;
 import moe.ku6.sekaimagic.chart.fingers.C4FSheet;
 import moe.ku6.sekaimagic.command.ICommand;
-import moe.ku6.sekaimagic.data.SekaiDataManager;
-import moe.ku6.sekaimagic.exception.command.CommandExecutionException;
+import moe.ku6.sekaimagic.data.SekaiDatabase;
+import moe.ku6.sekaimagic.music.Track;
 import moe.ku6.sekaimagic.music.TrackDifficulty;
 import moe.ku6.sekaimagic.chart.sus.SUSSheet;
 import org.jline.jansi.Ansi;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.nio.file.OpenOption;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,33 +31,64 @@ public class FingersCommand implements ICommand<FingersCommand.Params> {
 
     @Override
     public void HandleInternal(Params args) throws Exception {
-        if (args.generate.size() == 2) {
-            var packageId = Integer.parseInt(args.generate.getFirst());
-            var difficulty = TrackDifficulty.FromString(args.generate.getLast());
-            if (difficulty == null) {
-                throw new CommandExecutionException("Invalid difficulty: %s".formatted(args.generate.getLast()));
-            }
+        List<Track> selectedTracks = new ArrayList<>();
 
-            var pkg = SekaiDataManager.getInstance().getPackages().get(packageId);
+        if (args.args.size() >= 1) {
+            var packageId = Integer.parseInt(args.args.getFirst());
+            var pkg = SekaiDatabase.getInstance().getPackages().get(packageId);
             if (pkg == null) {
-                throw new CommandExecutionException("Package ID %d not found".formatted(packageId));
+                log.error("Not found package with ID %d".formatted(packageId));
+                return;
             }
 
-            var susData = Files.readAllLines(pkg.getTracks().get(difficulty).getFile().toPath());
-            var susSheet = new SUSSheet(pkg, pkg.getTracks().get(difficulty), susData);
+            if (args.args.size() >= 2) {
+                var difficulty = TrackDifficulty.FromString(args.args.getLast());
+                if (difficulty == null) {
+                    log.error("Invalid difficulty: %s".formatted(args.args.getLast()));
+                    return;
+                }
 
-            var savePath = new File(SekaiMagic.getInstance().getCwd() + "/fingers/%d/%s.c4f".formatted(packageId, difficulty.toString().toLowerCase()));
-            log.info(susSheet.ToPrintedString());
+                var track = pkg.getTracks().get(difficulty);
+                if (track == null) {
+                    log.error("No track found with difficulty %s".formatted(difficulty));
+                    return;
+                }
+                selectedTracks.add(track);
 
-            var c4fSheet = new C4FSheet(susSheet);
-            savePath.getParentFile().mkdirs();
-            if (!savePath.exists()) savePath.createNewFile();
+            } else {
+                selectedTracks.addAll(pkg.getTracks().values());
+            }
+        }
 
-            Files.writeString(savePath.toPath(), c4fSheet.Serialize(), StandardOpenOption.WRITE);
+        if (!selectedTracks.isEmpty()) {
+            boolean operationPerformed = false;
 
-            log.info(Ansi.ansi().fgBrightGreen().a("Generated file saved to %s".formatted(savePath)).reset().toString());
+            for (var track : selectedTracks) {
+                var pkg = SekaiDatabase.getInstance().getPackages().get(track.getId());
+                var difficulty = track.getDifficulty();
+                var packageId = pkg.getId();
 
-            return;
+                if (args.generate) {
+                    var susData = Files.readAllLines(pkg.getTracks().get(difficulty).getFile().toPath());
+                    var susSheet = new SUSSheet(pkg, pkg.getTracks().get(difficulty), susData);
+
+                    var savePath = new File(SekaiMagic.getInstance().getCwd() + "/fingers/%d/%s.c4f".formatted(packageId, difficulty.toString().toLowerCase()));
+
+                    if (args.printInfo) log.info(susSheet.ToPrintedString());
+
+                    var c4fSheet = new C4FSheet(susSheet);
+                    savePath.getParentFile().mkdirs();
+                    if (!savePath.exists()) savePath.createNewFile();
+
+                    Files.writeString(savePath.toPath(), c4fSheet.Serialize(), StandardOpenOption.WRITE);
+                    log.info(Ansi.ansi().fgBrightGreen().a("Generate: [%d]%s %s: %s".formatted(pkg.getId(), pkg.getTitle(), difficulty, savePath)).reset().toString());
+                    operationPerformed = true;
+                    continue;
+                }
+
+            }
+
+            if (operationPerformed) return;
         }
 
         log.info(GetUsage());
@@ -66,16 +96,26 @@ public class FingersCommand implements ICommand<FingersCommand.Params> {
 
     public static class Params {
         @Parameter(
-                names = {"-g", "--generate"},
-                description = "...-g <Package ID> <Difficulty>. Generates a finger chart from a track file. Default location for generated files are in the `fingers` directory in the current working directory.",
-                arity = 2
+                description = "<Package ID> [Difficulty]. Omit the difficulty to use select all difficulties."
         )
-        public List<String> generate = new ArrayList<>();
+        public List<String> args = new ArrayList<>();
+
+        @Parameter(
+                names = {"-g", "--generate"},
+                description = "Generates a finger chart from a track file. Default location for generated files are in the `fingers` directory in the current working directory."
+        )
+        public boolean generate;
 
         @Parameter(
                 names = {"-o" , "--output"},
                 description = "Specify a different output file for the generated finger chart."
         )
         public String outputFile;
+
+        @Parameter(
+                names = {"-p", "--print-info"},
+                description = "Prints SUS chart information."
+        )
+        public boolean printInfo;
     }
 }

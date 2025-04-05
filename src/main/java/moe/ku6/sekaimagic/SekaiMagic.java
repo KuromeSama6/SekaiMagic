@@ -5,16 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import moe.ku6.sekaimagic.command.CommandManager;
 import moe.ku6.sekaimagic.config.CommandLineConfig;
 import moe.ku6.sekaimagic.console.InteractiveConsole;
-import moe.ku6.sekaimagic.data.SekaiDataManager;
+import moe.ku6.sekaimagic.data.SekaiDatabase;
+import moe.ku6.sekaimagic.adb.ADBManager;
 import moe.ku6.sekaimagic.util.JsonUtil;
-import moe.ku6.sekaimagic.util.Util;
 import moe.ku6.sekaimagic.util.json.JsonWrapper;
 import okhttp3.OkHttpClient;
 import org.jline.jansi.Ansi;
-import org.jline.jansi.AnsiConsole;
 
 import java.io.File;
-import java.net.http.HttpClient;
 
 @Slf4j
 public class SekaiMagic {
@@ -29,7 +27,7 @@ public class SekaiMagic {
     @Getter
     private File cwd;
     @Getter
-    private SekaiDataManager sekaiDataManager;
+    private SekaiDatabase sekaiDataManager;
     @Getter
     private OkHttpClient httpClient;
 
@@ -56,9 +54,10 @@ public class SekaiMagic {
 
         console = new InteractiveConsole();
         LoadConfig();
-        sekaiDataManager = new SekaiDataManager();
+        sekaiDataManager = new SekaiDatabase();
 
         new CommandManager();
+        new ADBManager();
 
         log.info(Ansi.ansi().fgBrightCyan().a("Ready. Type 'help' for general guidance, 'man' for command usage, hit Ctrl+D to exit.").reset().toString());
         log.info(Ansi.ansi().bg(Ansi.Color.WHITE).fg(Ansi.Color.GREEN).a("Hint: Do `search [keyword]` to see info about a music.").reset().toString());

@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import moe.ku6.sekaimagic.SekaiMagic;
 import moe.ku6.sekaimagic.exception.track.TrackException;
-import moe.ku6.sekaimagic.music.Package;
+import moe.ku6.sekaimagic.music.MusicPackage;
 import moe.ku6.sekaimagic.music.Track;
 import moe.ku6.sekaimagic.music.TrackDifficulty;
 import moe.ku6.sekaimagic.util.JsonUtil;
@@ -24,13 +24,13 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-public class SekaiDataManager {
+public class SekaiDatabase {
     @Getter
-    private static SekaiDataManager instance;
+    private static SekaiDatabase instance;
     @Getter
-    private final Map<Integer, Package> packages = new HashMap<>();
+    private final Map<Integer, MusicPackage> packages = new HashMap<>();
 
-    public SekaiDataManager() {
+    public SekaiDatabase() {
         if (instance != null)
             throw new IllegalStateException("SekaiDataManager is already initialized");
 
@@ -147,7 +147,7 @@ public class SekaiDataManager {
         {
             // parse musics
             for (var obj : data.GetObjectList("packages")) {
-                var music = new Package(obj);
+                var music = new MusicPackage(obj);
                 packages.put(music.getId(), music);
             }
         }
@@ -196,7 +196,7 @@ public class SekaiDataManager {
             log.warn("The following tracks have no corresponding music definitions and are ignored: {}", missingMusic.toArray());
         }
 
-        packages.values().forEach(Package::SortTracks);
+        packages.values().forEach(MusicPackage::SortTracks);
 
         log.info("Loaded {} tracks.", files.size());
     }

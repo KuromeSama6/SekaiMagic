@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * Represents a music sheet in the game. Contains references to metadata about the sheet and all difficulties of the sheet.
  */
-public class Package {
+public class MusicPackage {
     @Getter
     private final int id;
     @Getter
@@ -22,7 +22,7 @@ public class Package {
     @Getter
     private final Map<TrackDifficulty, Integer> playLevels = new HashMap<>();
 
-    public Package(JsonWrapper data) {
+    public MusicPackage(JsonWrapper data) {
         id = data.GetInt("id");
         title = data.GetString("title", "");
         pronounciation = data.GetString("pronunciation", ""); // intentionally misspelled to match the API

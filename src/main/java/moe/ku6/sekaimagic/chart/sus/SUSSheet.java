@@ -7,7 +7,7 @@ import moe.ku6.sekaimagic.exception.sus.InvalidRequestAttributeException;
 import moe.ku6.sekaimagic.exception.sus.SUSParseException;
 import moe.ku6.sekaimagic.chart.sus.section.TimingSection;
 import moe.ku6.sekaimagic.chart.sus.section.FlowSpeedTiming;
-import moe.ku6.sekaimagic.music.Package;
+import moe.ku6.sekaimagic.music.MusicPackage;
 import moe.ku6.sekaimagic.music.Track;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tools.ant.types.Commandline;
@@ -33,11 +33,13 @@ public class SUSSheet {
     private final List<PendingBPMSection> pendingBPMSections = new ArrayList<>();
     private final List<PendingBeatSection> pendingBeatSections = new ArrayList<>();
     @Getter
-    private final Package pkg;
+    private final MusicPackage pkg;
     @Getter
     private final Track track;
+    @Getter
+    private final double totalLength;
 
-    public SUSSheet(Package pkg, Track track, List<String> data) {
+    public SUSSheet(MusicPackage pkg, Track track, List<String> data) {
         this.pkg = pkg;
         this.track = track;
         var lines = data.stream()
@@ -59,8 +61,11 @@ public class SUSSheet {
             for (int i = 0; i < points.size(); i++) {
                 var current = points.get(i);
                 int length;
+
+//                log.debug("{}", i);
                 if (i == points.size() - 1) {
-                    length = 0;
+                    length = GetLastMeasure() + 1 - current.GetMeasure();
+
                 } else {
                     var next = points.get(i + 1);
                     length = next.GetMeasure() - current.GetMeasure();
@@ -81,6 +86,7 @@ public class SUSSheet {
                 time += duration;
             }
 
+            totalLength = time;
         }
 
     }
@@ -289,6 +295,13 @@ public class SUSSheet {
         var ret = GetTimingPoint(0, FlowSpeedTiming.class, null);
         if (ret == null) return 1;
         return ret.speed();
+    }
+
+    public int GetLastMeasure() {
+        return regularInstructions.stream()
+                .mapToInt(RegularInstruction::measure)
+                .max()
+                .orElseThrow();
     }
 
     public double ToRealTime(SheetLocation location) {

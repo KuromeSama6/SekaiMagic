@@ -3,8 +3,7 @@ package moe.ku6.sekaimagic.command.impl;
 import com.beust.jcommander.Parameter;
 import lombok.extern.slf4j.Slf4j;
 import moe.ku6.sekaimagic.command.ICommand;
-import moe.ku6.sekaimagic.data.SekaiDataManager;
-import moe.ku6.sekaimagic.music.TrackDifficulty;
+import moe.ku6.sekaimagic.data.SekaiDatabase;
 import org.jline.jansi.Ansi;
 
 @Slf4j
@@ -21,7 +20,7 @@ public class SearchCommand implements ICommand<SearchCommand.Params> {
 
     @Override
     public void HandleInternal(Params args) throws Exception {
-        var candidates = SekaiDataManager.getInstance().getPackages().values().stream()
+        var candidates = SekaiDatabase.getInstance().getPackages().values().stream()
                 .filter(c -> c.getTitle().toLowerCase().contains(args.keyword.toLowerCase()) || c.getPronounciation().toLowerCase().matches(args.keyword.toLowerCase()))
                 .limit(args.limit > 0 ? args.limit : Long.MAX_VALUE)
                 .toList();
