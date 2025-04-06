@@ -2,6 +2,7 @@ plugins {
     id("java")
     `java-library`
     `maven-publish`
+    id("com.gradleup.shadow") version "9.0.0-beta6"
 }
 
 repositories {
@@ -50,7 +51,12 @@ dependencies {
 
     implementation("com.github.vidstige:jadb:v1.2.1")
 
+    implementation("moe.ku6:jsonwrapper:0.0.1")
+
+    compileOnly("org.projectlombok:lombok:1.18.36")
     annotationProcessor("org.projectlombok:lombok:1.18.36")
+
+    testCompileOnly("org.projectlombok:lombok:1.18.36")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.36")
 
     testImplementation(platform("org.junit:junit-bom:5.10.0"))

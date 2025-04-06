@@ -44,6 +44,7 @@ public class InteractiveConsole {
     public String ReadBlocking(String prompt) {
         try {
             return lineReader.readLine(prompt);
+
         } catch (UserInterruptException | EndOfFileException e) {
             return null;
         }

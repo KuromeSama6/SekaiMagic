@@ -2,13 +2,13 @@ package moe.ku6.sekaimagic;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import moe.ku6.jsonwrapper.JsonUtil;
+import moe.ku6.jsonwrapper.JsonWrapper;
 import moe.ku6.sekaimagic.command.CommandManager;
 import moe.ku6.sekaimagic.config.CommandLineConfig;
 import moe.ku6.sekaimagic.console.InteractiveConsole;
 import moe.ku6.sekaimagic.data.SekaiDatabase;
 import moe.ku6.sekaimagic.adb.ADBManager;
-import moe.ku6.sekaimagic.util.JsonUtil;
-import moe.ku6.sekaimagic.util.json.JsonWrapper;
 import okhttp3.OkHttpClient;
 import org.jline.jansi.Ansi;
 

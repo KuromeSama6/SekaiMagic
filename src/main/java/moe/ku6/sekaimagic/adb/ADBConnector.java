@@ -137,7 +137,7 @@ public class ADBConnector implements IInputDevice {
     @Override
     public void Tap(double x) {
         var pos = ToScreenTapPosition(x);
-        ExecuteShellAsync("input tap %.0f %.0f".formatted(pos.getX(), pos.getY()));
+//        ExecuteShellAsync("input tap %.0f %.0f".formatted(pos.getX(), pos.getY()));
     }
 
     @Override
@@ -146,19 +146,21 @@ public class ADBConnector implements IInputDevice {
         var pos = ToScreenTapPosition(x);
         var duration = new Vec2(config.GetList("autoplay.randomization.swipeDuration", Double.class));
 
-//        log.debug(pos.toString());
-        var builder = new TouchEventBuilder(this)
-                .FingerDown(fingerId)
-                .Position(new Vec2(screenResolution.getY() - pos.getY(), pos.getX()))
-                .Sync()
-                .Sleep(duration.Random() / 1000.0)
-                .Position(new Vec2(screenResolution.getY() - pos.getY() + 100, pos.getX()))
-                .Sync()
-                .FingerUp()
-                .Sync();
-//        res.thenAccept(log::debug);
+        ExecuteShellAsync("input swipe %.0f %.0f %.0f %.0f 100".formatted(pos.getX(), pos.getY(), pos.getX(), pos.getY() - 100));
 
-        ExecuteShellAsync(String.join(";", builder.Build()));
+//        log.debug(pos.toString());
+//        var builder = new TouchEventBuilder(this)
+//                .FingerDown(fingerId)
+//                .Position(new Vec2(screenResolution.getY() - pos.getY(), pos.getX()))
+//                .Sync()
+//                .Sleep(duration.Random() / 1000.0)
+//                .Position(new Vec2(screenResolution.getY() - pos.getY() + 100, pos.getX()))
+//                .Sync()
+//                .FingerUp()
+//                .Sync();
+////        res.thenAccept(log::debug);
+//
+//        ExecuteShellAsync(String.join(";", builder.Build()));
     }
 
     private Vec2 ToScreenTapPosition(double x) {

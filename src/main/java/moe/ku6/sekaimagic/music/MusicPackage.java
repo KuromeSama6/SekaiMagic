@@ -1,7 +1,7 @@
 package moe.ku6.sekaimagic.music;
 
 import lombok.Getter;
-import moe.ku6.sekaimagic.util.json.JsonWrapper;
+import moe.ku6.jsonwrapper.JsonWrapper;
 import org.jline.jansi.Ansi;
 
 import java.util.HashMap;

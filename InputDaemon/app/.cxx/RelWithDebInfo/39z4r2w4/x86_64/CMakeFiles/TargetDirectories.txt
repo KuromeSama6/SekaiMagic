@@ -1,0 +1,3 @@
+D:/dev/SekaiMagic/InputDaemon/app/.cxx/RelWithDebInfo/39z4r2w4/x86_64/CMakeFiles/uinput_touch.dir
+D:/dev/SekaiMagic/InputDaemon/app/.cxx/RelWithDebInfo/39z4r2w4/x86_64/CMakeFiles/edit_cache.dir
+D:/dev/SekaiMagic/InputDaemon/app/.cxx/RelWithDebInfo/39z4r2w4/x86_64/CMakeFiles/rebuild_cache.dir

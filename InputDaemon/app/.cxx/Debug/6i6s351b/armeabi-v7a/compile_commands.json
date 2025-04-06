@@ -1,0 +1,7 @@
+[
+{
+  "directory": "D:/dev/SekaiMagic/InputDaemon/app/.cxx/Debug/6i6s351b/armeabi-v7a",
+  "command": "C:\\Users\\kurome\\AppData\\Local\\Android\\Sdk\\ndk\\27.0.12077973\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang.exe --target=armv7-none-linux-androideabi24 --sysroot=C:/Users/kurome/AppData/Local/Android/Sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Duinput_touch_EXPORTS -ID:/dev/SekaiMagic/InputDaemon/app/src/main/cpp/src/main/cpp -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -march=armv7-a -mthumb -Wformat -Werror=format-security  -fno-limit-debug-info  -fPIC -o CMakeFiles\\uinput_touch.dir\\uinput_touch.c.o -c D:\\dev\\SekaiMagic\\InputDaemon\\app\\src\\main\\cpp\\uinput_touch.c",
+  "file": "D:\\dev\\SekaiMagic\\InputDaemon\\app\\src\\main\\cpp\\uinput_touch.c"
+}
+]

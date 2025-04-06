@@ -36,7 +36,7 @@ public class InputDaemon extends Activity {
     public void onDestroy() {
         super.onDestroy();
         Log.i("InputDaemon", "InputDaemon stopped. Stopping InputDaemonService.");
-
+        InputDaemonService.getInstance().Stop();
         InputDaemonService.getInstance().stopSelf();
     }
 
@@ -44,7 +44,9 @@ public class InputDaemon extends Activity {
         Log.i("InputDaemon", "Quitting InputDaemon");
         // stop the InputDaemonService
         InputDaemonService.getInstance().stopSelf();
-        System.exit(1);
+        InputDaemonService.getInstance().Stop();
+        // stop activity
+        System.exit(0);
         return;
     }
 }

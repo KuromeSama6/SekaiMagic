@@ -1,0 +1,11 @@
+# ninja log v5
+1	211	7655837872521034	CMakeFiles/uinput_touch.dir/uinput_touch.c.o	6c3dbf0c85dcec77
+212	494	7655837875348350	D:/dev/SekaiMagic/InputDaemon/app/build/intermediates/cxx/Debug/6i6s351b/obj/x86_64/libuinput_touch.so	da16b26bc6feb34c
+1	255	7655839152202799	CMakeFiles/uinput_touch.dir/uinput_touch.c.o	6c3dbf0c85dcec77
+255	526	7655839154900209	D:/dev/SekaiMagic/InputDaemon/app/build/intermediates/cxx/Debug/6i6s351b/obj/x86_64/libuinput_touch.so	da16b26bc6feb34c
+1	159	7655839314013621	CMakeFiles/uinput_touch.dir/uinput_touch.c.o	6c3dbf0c85dcec77
+159	398	7655839316377666	D:/dev/SekaiMagic/InputDaemon/app/build/intermediates/cxx/Debug/6i6s351b/obj/x86_64/libuinput_touch.so	da16b26bc6feb34c
+2	168	7656084253454645	CMakeFiles/uinput_touch.dir/uinput_touch.c.o	6c3dbf0c85dcec77
+169	415	7656084255925247	D:/dev/SekaiMagic/InputDaemon/app/build/intermediates/cxx/Debug/6i6s351b/obj/x86_64/libuinput_touch.so	da16b26bc6feb34c
+2	172	7656086340336938	CMakeFiles/uinput_touch.dir/uinput_touch.c.o	6c3dbf0c85dcec77
+173	416	7656086342752978	D:/dev/SekaiMagic/InputDaemon/app/build/intermediates/cxx/Debug/6i6s351b/obj/x86_64/libuinput_touch.so	da16b26bc6feb34c
