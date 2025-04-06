@@ -1,13 +1,16 @@
 package moe.ku6.sekaimagic.chart.fingers;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import moe.ku6.sekaimagic.chart.SheetLocation;
 import moe.ku6.sekaimagic.chart.sus.RegularInstruction;
 import moe.ku6.sekaimagic.chart.sus.SUSSheet;
 import moe.ku6.sekaimagic.exception.sus.SUSParseException;
+import moe.ku6.sekaimagic.util.Vec2;
 
 import java.util.*;
 
+@Slf4j
 public class C4FSheet {
     @Getter
     private final List<FingerCue> cues = new ArrayList<>();
@@ -31,7 +34,7 @@ public class C4FSheet {
 
         // hold notes
         {
-            Map<Integer, ChainFingerQueue> openGroups = new HashMap<>();
+            Map<Integer, ChainFingerCue> openGroups = new HashMap<>();
             var instructions = sheet.getRegularInstructions().stream()
                     .filter(c -> c.noteType() == 3)
                     .toList();
@@ -60,7 +63,7 @@ public class C4FSheet {
                                 openGroups.remove(groupId);
                             }
 
-                            var chain = new ChainFingerQueue(loc, time, tapPos);
+                            var chain = new ChainFingerCue(loc, time, tapPos, pair.width());
                             openGroups.put(groupId, chain);
                         }
                         case SOFT_RELAY, HARD_RELAY -> {
@@ -68,13 +71,13 @@ public class C4FSheet {
                             if (chain == null)
                                 throw new SUSParseException("Could not add a relay to a group that is not open (%d) (at %s)".formatted(groupId, instruction));
 
-                            chain.Add(new FingerCue(loc, time, tapPos, FingerActionType.FINGER_HOLD));
+                            chain.Add(new FingerCue(loc, time, tapPos, pair.width(), action == HoldActionType.SOFT_RELAY ? FingerActionType.FINGER_HOLD_SOFT : FingerActionType.FINGER_HOLD), true);
                         }
                         case END -> {
                             if (!openGroups.containsKey(groupId))
                                 throw new SUSParseException("Could not close a group that is not open (%d)".formatted(groupId));
                             var chain = openGroups.get(groupId);
-                            chain.Add(new FingerCue(loc, time, tapPos, FingerActionType.FINGER_UP));
+                            chain.Add(new FingerCue(loc, time, tapPos, pair.width(), FingerActionType.FINGER_UP), true);
                         }
                     }
 
@@ -86,6 +89,12 @@ public class C4FSheet {
         }
 
         cues.sort(Comparator.comparingDouble(FingerCue::getTime));
+        for (var cue : cues) {
+            if (cue instanceof ChainFingerCue chain) {
+                PruneHoldNotes(chain);
+            }
+        }
+//        GenerateHelperTouches();
     }
 
     private void AddSingleNote(RegularInstruction instruction) {
@@ -110,10 +119,44 @@ public class C4FSheet {
             // find tap pos
             var tapPos = (instruction.lane() - 2) + pair.width() / 2.0;
 
-            FingerCue note = new FingerCue(loc, time, tapPos, instruction.noteType() == 1 ? FingerActionType.TAP : FingerActionType.FLICK_UP);
+            FingerCue note = new FingerCue(loc, time, tapPos, pair.width(), instruction.noteType() == 1 ? FingerActionType.TAP : FingerActionType.FLICK_UP);
             // Add note to the chart
             cues.add(note);
         }
+    }
+
+    public void GenerateHelperTouches() {
+        for (var cue : cues) {
+            if (cue instanceof ChainFingerCue chain) {
+                chain.Add(GenerateHelperTouch(chain, 1, .2), false);
+                chain.Add(GenerateHelperTouch(chain, -1, .2), false);
+                chain.Sort();
+            }
+        }
+    }
+
+    private void PruneHoldNotes(ChainFingerCue chain) {
+        log.debug("------ prune: hold: {}", chain.getLocation());
+        var bpm = originalSheet.GetBPM(chain.getLocation().measure());
+        var bps = originalSheet.GetBPS(chain.getLocation().measure());
+        var secondsPerBeat = 1.0 / bps;
+
+        log.debug("prune: bpm: {} bps: {}, spb: {}", bpm, bps, secondsPerBeat);
+        var cues = chain.getCues();
+        if (cues.size() > 1) {
+            for (int i = 0; i < cues.size() - 1; i++) {
+                var current = cues.get(i);
+                var next = cues.get(i + 1);
+
+                Vec2 currentRange = current.GetRange();
+                Vec2 nextRange = next.GetRange();
+
+                if (next.getTime() - current.getTime() < secondsPerBeat / 8.0 && currentRange.Overlaps(nextRange)) {
+                    log.debug("prune: warn: cues too close (0: #{}@{}, 1: #{}@{})", i, current.getLocation(), i + 1, next.getLocation());
+                }
+            }
+        }
+
     }
 
     public String Serialize() {
@@ -129,5 +172,18 @@ public class C4FSheet {
             sb.append("\n");
         }
         return sb.toString();
+    }
+
+    private static ChainFingerCue GenerateHelperTouch(ChainFingerCue cue, double offset, double timeOffset) {
+        var ret = new ChainFingerCue(cue);
+        ret.setPos(ret.getPos() + offset);
+        ret.setTime(ret.getTime() + timeOffset);
+
+        ret.getCues().forEach(c -> {
+            c.setPos(c.getPos() + offset);
+            c.setTime(c.getTime() + timeOffset);
+        });
+
+        return ret;
     }
 }

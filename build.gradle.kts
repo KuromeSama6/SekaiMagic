@@ -47,9 +47,10 @@ dependencies {
     implementation("net.java.dev.jna:jna:5.17.0")
     // https://mvnrepository.com/artifact/io.appium/java-client
     implementation("io.appium:java-client:9.4.0")
-    implementation("org.java-websocket:Java-WebSocket:1.6.0")
-
-    implementation("com.github.vidstige:jadb:v1.2.1")
+    // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    // https://mvnrepository.com/artifact/dev.mobile/dadb
+    implementation("dev.mobile:dadb:1.2.9")
 
     implementation("moe.ku6:jsonwrapper:0.0.1")
 

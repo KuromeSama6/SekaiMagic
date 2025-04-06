@@ -1,15 +1,11 @@
 package moe.ku6.sekaimagic.command.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import moe.ku6.sekaimagic.adb.ADBManager;
-import moe.ku6.sekaimagic.adb.TouchEventBuilder;
+import moe.ku6.sekaimagic.input.InputManager;
+import moe.ku6.sekaimagic.input.TouchEventBuilder;
 import moe.ku6.sekaimagic.command.ICommand;
 import moe.ku6.sekaimagic.input.GuideSoundPlayer;
 import moe.ku6.sekaimagic.util.Vec2;
-
-import javax.sound.sampled.UnsupportedAudioFileException;
-import java.io.IOException;
-import java.util.Arrays;
 
 @Slf4j
 public class PlayGuideSoundCommand implements ICommand<Object> {
@@ -37,18 +33,16 @@ public class PlayGuideSoundCommand implements ICommand<Object> {
         }
 
         // flick
-        var connector = ADBManager.getInstance().getConnectors().getFirst();
+        var connector = InputManager.getInstance().getDaemons().getFirst();
 
-        var builder = new TouchEventBuilder(connector)
-                .FingerDown(1)
+
+        var builder = new TouchEventBuilder(0)
+                .FingerDown()
                 .Position(new Vec2(540, 960))
                 .Sync()
                 .FingerUp()
                 .Sync();
 
-        log.debug(String.join("\n", builder.Build()));
-
-        var ret = connector.ExecuteShellBlocking(String.join(";", builder.Build()));
-        log.debug(ret);
+        connector.getWebsocketClient().SendEvents(builder.Build());
     }
 }

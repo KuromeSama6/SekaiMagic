@@ -1,4 +1,4 @@
-package moe.ku6.sekaimagic.adb;
+package moe.ku6.sekaimagic.input;
 
 public class ABSKeyCode {
     public static final int ABS_MT_SLOT = 0x2f;

@@ -8,7 +8,7 @@ import moe.ku6.sekaimagic.command.CommandManager;
 import moe.ku6.sekaimagic.config.CommandLineConfig;
 import moe.ku6.sekaimagic.console.InteractiveConsole;
 import moe.ku6.sekaimagic.data.SekaiDatabase;
-import moe.ku6.sekaimagic.adb.ADBManager;
+import moe.ku6.sekaimagic.input.InputManager;
 import okhttp3.OkHttpClient;
 import org.jline.jansi.Ansi;
 
@@ -57,7 +57,7 @@ public class SekaiMagic {
         sekaiDataManager = new SekaiDatabase();
 
         new CommandManager();
-        new ADBManager();
+        new InputManager();
 
         log.info(Ansi.ansi().fgBrightCyan().a("Ready. Type 'help' for general guidance, 'man' for command usage, hit Ctrl+D to exit.").reset().toString());
         log.info(Ansi.ansi().bg(Ansi.Color.WHITE).fg(Ansi.Color.GREEN).a("Hint: Do `search [keyword]` to see info about a music.").reset().toString());

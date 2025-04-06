@@ -86,7 +86,7 @@ public class WebsocketServer extends WebSocketServer {
 
     @Override
     public void onMessage(WebSocket webSocket, String s) {
-        Log.d(TAG, "Message received: " + s);
+//        Log.d(TAG, "Message received: " + s);
         var data = new JsonWrapper(s);
         var respose = CommandManager.getInstance().HandleCommand(data);
 

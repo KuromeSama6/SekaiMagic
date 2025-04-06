@@ -36,8 +36,31 @@ public class Vec2 {
         return x + Math.random() * (y - x);
     }
 
+    public Vec2 LerpTo(Vec2 vec, double t) {
+        return Lerp(this, vec, t);
+    }
+
+    public boolean IsInRange(double value) {
+        return value >= x && value <= y;
+    }
+
+    public double InverseLerp(double value) {
+        return MathUtil.InverseLerp(x, y, value);
+    }
+
+    public boolean Overlaps(Vec2 other) {
+        return x <= other.y && y >= other.x;
+    }
+
     @Override
     public String toString() {
         return "Vec2(%s, %s)".formatted(x, y);
+    }
+
+    public static Vec2 Lerp(Vec2 a, Vec2 b, double t) {
+        return new Vec2(
+            a.x + (b.x - a.x) * t,
+            a.y + (b.y - a.y) * t
+        );
     }
 }

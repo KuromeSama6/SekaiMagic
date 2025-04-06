@@ -1,9 +1,11 @@
 {
     "gameFilesPath": "",
     "gamePackageName": "com.hermes.mk",
-    "adb": {
-        "autoConnect": [],
-        "inputDeviceName": ""
+    "inputd": {
+        "daemonApkPath": "",
+        "skipSetupWizard": false,
+        "forwardPort": 10800,
+        "autoConnect": []
     },
     "autoplay": {
         "randomization": {

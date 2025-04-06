@@ -10,19 +10,29 @@ import java.util.List;
 /**
  * Used to represent long and hold notes.
  */
-public class ChainFingerQueue extends FingerCue {
+public class ChainFingerCue extends FingerCue {
     @Getter
     private final List<FingerCue> cues = new ArrayList<>();
 
-    public ChainFingerQueue(SheetLocation location, double time, double pos) {
-        super(location, time, pos, FingerActionType.FINGER_DOWN);
+    public ChainFingerCue(SheetLocation location, double time, double pos, double width) {
+        super(location, time, pos, width, FingerActionType.FINGER_DOWN);
         cues.add(this);
     }
 
-    public void Add(FingerCue cue) {
+    public ChainFingerCue(ChainFingerCue other) {
+        super(other);
+        cues.addAll(other.cues);
+    }
+
+    public void Add(FingerCue cue, boolean sort) {
         if (cues.isEmpty()) return;
         cues.add(cue);
+        if (sort) {
+            cues.sort(Comparator.comparingDouble(FingerCue::getTime));
+        }
+    }
 
+    public void Sort() {
         cues.sort(Comparator.comparingDouble(FingerCue::getTime));
     }
 

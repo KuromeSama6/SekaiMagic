@@ -1,3 +1,5 @@
 # ninja log v5
 1	172	7655992702865598	CMakeFiles/uinput_touch.dir/uinput_touch.c.o	764d7b9ede31f6d6
 173	412	7655992705262836	D:/dev/SekaiMagic/InputDaemon/app/build/intermediates/cxx/RelWithDebInfo/39z4r2w4/obj/x86_64/libuinput_touch.so	f855e197528ec32a
+2	170	7656512074833833	CMakeFiles/uinput_touch.dir/uinput_touch.c.o	764d7b9ede31f6d6
+170	402	7656512077161978	D:/dev/SekaiMagic/InputDaemon/app/build/intermediates/cxx/RelWithDebInfo/39z4r2w4/obj/x86_64/libuinput_touch.so	f855e197528ec32a

@@ -10,5 +10,6 @@ public enum FingerActionType {
     FLICK_UP,
     FINGER_DOWN,
     FINGER_UP,
-    FINGER_HOLD
+    FINGER_HOLD,
+    FINGER_HOLD_SOFT
 }

@@ -3,12 +3,9 @@ package moe.ku6.sekaimagic.command.impl;
 import com.beust.jcommander.Parameter;
 import lombok.extern.slf4j.Slf4j;
 import moe.ku6.sekaimagic.SekaiMagic;
-import moe.ku6.sekaimagic.adb.ADBManager;
+import moe.ku6.sekaimagic.input.InputManager;
 import moe.ku6.sekaimagic.command.ICommand;
 import moe.ku6.sekaimagic.exception.command.CommandExecutionException;
-import se.vidstige.jadb.JadbException;
-
-import java.io.IOException;
 
 @Slf4j
 public class ADBClientCommand implements ICommand<ADBClientCommand.Params> {
@@ -34,17 +31,17 @@ public class ADBClientCommand implements ICommand<ADBClientCommand.Params> {
             var port = Integer.parseInt(addrArgs[1]);
 
             try {
-                ADBManager.getInstance().Connect(ip, port);
+                InputManager.getInstance().Connect(ip, port);
             } catch (Exception e) {
                 log.error("Connection failed: {}", e.getMessage());
                 return;
             }
 
             if (!args.noSave) {
-                var list = SekaiMagic.getInstance().getConfig().GetList("adb.autoConnect", String.class);
+                var list = SekaiMagic.getInstance().getConfig().GetList("inputd.autoConnect", String.class);
                 if (!list.contains(args.connect)) {
                     list.add(args.connect);
-                    SekaiMagic.getInstance().getConfig().Set("adb.autoConnect", list);
+                    SekaiMagic.getInstance().getConfig().Set("inputd.autoConnect", list);
                     SekaiMagic.getInstance().SaveConfig();
                 }
             }

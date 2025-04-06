@@ -25,11 +25,13 @@ public class SendEventCommand implements ICommandHandler {
             int code = events.get(i + 1);
             int value = events.get(i + 2);
 
-            Log.d("SendEventCommand", "event type: " + type + " code: " + code + " value: " + value);
+//            Log.d("SendEventCommand", "event type: " + type + " code: " + code + " value: " + value);
 
-            InputDaemon.getInstance().runOnUiThread(() -> {
-                InputDaemonService.getInstance().getUInput().Emit(type, code, value);
-            });
+//            InputDaemon.getInstance().runOnUiThread(() -> {
+//                InputDaemonService.getInstance().getUInput().Emit(type, code, value);
+//            });
+
+            InputDaemonService.getInstance().getUInput().Emit(type, code, value);
         }
 
         return null;
