@@ -26,7 +26,7 @@ dependencies {
     implementation("org.reflections:reflections:0.10.2")
     implementation("org.jcommander:jcommander:2.0")
     // https://mvnrepository.com/artifact/com.google.code.gson/gson
-    implementation("com.google.code.gson:gson:2.12.0")
+    implementation("com.google.code.gson:gson:2.12.1")
     // https://mvnrepository.com/artifact/org.apache.ant/ant
     implementation("org.apache.ant:ant:1.10.15")
     // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
@@ -51,6 +51,8 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     // https://mvnrepository.com/artifact/dev.mobile/dadb
     implementation("dev.mobile:dadb:1.2.9")
+    // https://mvnrepository.com/artifact/org.jfree/jfreesvg
+    implementation("org.jfree:jfreesvg:3.4.3")
 
     implementation("moe.ku6:jsonwrapper:0.0.1")
 

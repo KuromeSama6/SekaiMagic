@@ -89,4 +89,14 @@ public class InputManager {
             e.printStackTrace();
         }
     }
+
+    public void Stop() {
+        for (var daemon : daemons) {
+            try {
+                daemon.close();
+            } catch (IOException e) {
+                log.error("Failed to stop daemon: {}", e.getMessage());
+            }
+        }
+    }
 }

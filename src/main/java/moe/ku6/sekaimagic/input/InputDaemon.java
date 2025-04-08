@@ -8,6 +8,7 @@ import moe.ku6.sekaimagic.exception.adb.ADBInitializationConnection;
 import moe.ku6.sekaimagic.util.Vec2;
 import moe.ku6.sekaimagic.util.Util;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -19,7 +20,7 @@ import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
 @Slf4j
-public class InputDaemon {
+public class InputDaemon implements Closeable {
     private final Dadb adb;
     private final ExecutorService executor = Executors.newCachedThreadPool();
     @Getter
@@ -181,5 +182,19 @@ public class InputDaemon {
         var pos = (x + offset) * laneWidth + laneWidth / 2.0;
 
         return new Vec2(pos + Math.round(Math.random()), screenResolution.getY() * 0.15 + yRange.Random());
+    }
+
+    @Override
+    public void close() throws IOException {
+        if (websocketClient != null) {
+            websocketClient.close();
+        }
+
+        try {
+            if (adb != null) adb.close();
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -90,6 +90,11 @@ public class SekaiMagic {
 
     }
 
+    public void Exit() {
+        InputManager.getInstance().Stop();
+        System.exit(0);
+    }
+
     public static void main(String[] args) throws Exception {
         if (instance != null)
             throw new IllegalStateException("Instance already exists!");

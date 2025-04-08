@@ -69,8 +69,7 @@ public class InteractiveConsole {
                 CommandManager.getInstance().ProcessCommand(args);
 
             } catch (UserInterruptException | EndOfFileException e) {
-                log.info("User exit.");
-                System.exit(0);
+                SekaiMagic.getInstance().Exit();
                 break;
             }
 

@@ -46,6 +46,7 @@ public class TrackPlayer implements Closeable {
     private long lastTickTime;
     private final List<ActiveFinger> pendingFingers = new ArrayList<>();
     private final List<ActiveFinger> activeFingers = new ArrayList<>();
+    private final Set<Integer> heldFingers = new HashSet<>();
 
     public TrackPlayer(MusicPackage pkg, Track track, SUSSheet sheet) {
         this.pkg = pkg;
@@ -125,6 +126,8 @@ public class TrackPlayer implements Closeable {
                         new TouchEventBuilder(finger.getFingerId())
                                 .FingerDown()
                 );
+
+                heldFingers.add(finger.getFingerId());
             }
         }
 
@@ -147,7 +150,7 @@ public class TrackPlayer implements Closeable {
                 activeFingers.remove(finger);
                 event.FingerUp();
                 log.debug("end: {} time {} now {}", finger.getFingerId(), finger.getCue().getTime(), actualTrackTime);
-
+                heldFingers.remove(finger.getFingerId());
             }
         }
 
@@ -189,6 +192,19 @@ public class TrackPlayer implements Closeable {
     public void close() throws IOException {
         guideSoundPlayer.close();
         timer.close();
+
+        {
+            // clear held fingers
+            for (var finger : heldFingers) {
+                var event = new TouchEventBuilder(finger).FingerUp().Sync();
+                var daemon = InputManager.getInstance().getDaemons().getFirst();
+                if (daemon != null) {
+                    daemon.getWebsocketClient().SendEvents(event.Build());
+                }
+            }
+
+            heldFingers.clear();
+        }
     }
 
     private void EnsureRunning() {
