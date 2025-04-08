@@ -10,7 +10,7 @@
 ![](https://img.shields.io/badge/東雲-絵名-ccaa88)
 ![](https://img.shields.io/badge/暁山-瑞希-ffccfc)
 
-SekaiMagic is aims to be an all-in-one toolbox for Project Sekai, including features like song info lookup, leaderboard calculators, and most importantly, an autoplay feature to make your life easier in those midnight leaderboard grinding sessions.
+SekaiMagic aims to be an all-in-one toolbox for Project Sekai, including features like song info lookup, leaderboard calculators, and most importantly, an autoplay feature to make your life easier in those midnight leaderboard grinding sessions.
 
 **SekaiMagic is in very early development - issues and problems are common, especially with ADB and Android communication. Please report any issues you encounter on the GitHub page.**
 
