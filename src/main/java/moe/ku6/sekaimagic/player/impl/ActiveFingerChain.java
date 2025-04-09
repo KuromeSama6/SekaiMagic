@@ -61,7 +61,7 @@ public class ActiveFingerChain extends ActiveFinger {
         for (int i = index + 1; i < chain.getCues().size(); i++) {
             var cue = chain.getCues().get(i);
             candidates.add(cue);
-            if (cue.getAction() != FingerActionType.FINGER_HOLD_SOFT || true) {
+            if (cue.getAction() != FingerActionType.FINGER_HOLD_SOFT) {
                 // if the cue is not a soft cue, it is the end of the segment
                 break;
             }
@@ -69,11 +69,10 @@ public class ActiveFingerChain extends ActiveFinger {
 
         candidates.sort(Comparator.comparingDouble(FingerCue::getTime));
         var points = candidates.stream()
-                .mapToDouble(FingerCue::getPos)
-                .boxed()
+                .map(c -> new Vec2(c.getPos(), c.getTime()))
                 .toList();
 
-        return EvaluateBezier(points, MathUtil.InverseLerp(candidates.getFirst().getTime(), candidates.getLast().getTime(), time));
+        return EvaluateCatmullRom(points, MathUtil.InverseLerp(candidates.getFirst().getTime(), candidates.getLast().getTime(), time)).x;
     }
 
     @Override
@@ -110,5 +109,53 @@ public class ActiveFingerChain extends ActiveFinger {
         }
 
         return EvaluateBezierStep(nextLevel, t);
+    }
+
+    public static Vec2 EvaluateCatmullRom(List<Vec2> points, double t) {
+        if (points.size() == 1) {
+            return points.getFirst();
+        }
+
+        int n = points.size();
+        if (n < 2) throw new IllegalArgumentException("At least 2 points required");
+
+        // How many Bezier segments we'll have
+        int segments = n - 1;
+
+        // Clamp t to [0, 1]
+        t = Math.max(0, Math.min(1, t));
+
+        // Map t to segment index and local t
+        double scaledT = t * segments;
+        int seg = (int)Math.min(Math.floor(scaledT), segments - 1);
+        double localT = scaledT - seg;
+
+        // Get 4 points for Catmull-Rom
+        Vec2 p0 = (seg > 0) ? points.get(seg - 1) : points.get(seg);
+        Vec2 p1 = points.get(seg);
+        Vec2 p2 = points.get(seg + 1);
+        Vec2 p3 = (seg + 2 < n) ? points.get(seg + 2) : p2;
+
+        // Convert to Bezier control points
+        Vec2 c0 = p1;
+        Vec2 c1 = new Vec2(
+                p1.x + (p2.x - p0.x) / 6.0,
+                p1.y + (p2.y - p0.y) / 6.0
+        );
+        Vec2 c2 = new Vec2(
+                p2.x - (p3.x - p1.x) / 6.0,
+                p2.y - (p3.y - p1.y) / 6.0
+        );
+        Vec2 c3 = p2;
+
+        // De Casteljau's algorithm for cubic Bezier
+        Vec2 a = Vec2.Lerp(c0, c1, localT);
+        Vec2 b = Vec2.Lerp(c1, c2, localT);
+        Vec2 c = Vec2.Lerp(c2, c3, localT);
+
+        Vec2 d = Vec2.Lerp(a, b, localT);
+        Vec2 e = Vec2.Lerp(b, c, localT);
+
+        return Vec2.Lerp(d, e, localT);
     }
 }

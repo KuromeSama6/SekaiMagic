@@ -6,6 +6,7 @@ import moe.ku6.sekaimagic.chart.SheetLocation;
 import moe.ku6.sekaimagic.chart.sus.RegularInstruction;
 import moe.ku6.sekaimagic.chart.sus.SUSSheet;
 import moe.ku6.sekaimagic.exception.sus.SUSParseException;
+import moe.ku6.sekaimagic.util.Pair;
 import moe.ku6.sekaimagic.util.Vec2;
 
 import java.util.*;
@@ -14,6 +15,7 @@ import java.util.*;
 public class C4FSheet {
     @Getter
     private final List<FingerCue> cues = new ArrayList<>();
+    @Getter
     private final SUSSheet originalSheet;
 
     /**
@@ -88,13 +90,20 @@ public class C4FSheet {
             cues.addAll(openGroups.values());
         }
 
-        cues.sort(Comparator.comparingDouble(FingerCue::getTime));
-        for (var cue : cues) {
-            if (cue instanceof ChainFingerCue chain) {
-                PruneHoldNotes(chain);
-            }
-        }
+        PruneDuplicates();
+
+//        cues.sort(Comparator.comparingDouble(FingerCue::getTime));
+//        for (var cue : cues) {
+//            if (cue instanceof ChainFingerCue chain) {
+//                PruneHoldNotes(chain);
+//            }
+//        }
 //        GenerateHelperTouches();
+    }
+
+    private C4FSheet(C4FSheet other) {
+        cues.addAll(other.cues);
+        originalSheet = other.originalSheet;
     }
 
     private void AddSingleNote(RegularInstruction instruction) {
@@ -135,6 +144,49 @@ public class C4FSheet {
         }
     }
 
+    private void PruneDuplicates() {
+        Map<Pair<SheetLocation, Double>, FingerCue> checked = new HashMap<>();
+
+        for (var cue : new ArrayList<>(cues)) {
+            if (cue instanceof ChainFingerCue chain) {
+                for (var c : chain.getCues()) {
+                    var composite = new Pair<>(c.getLocation(), c.getPos());
+                    if (checked.containsKey(composite)) {
+                        var current = checked.get(composite);
+                        if (current.getAction() != FingerActionType.FLICK_UP || c != chain.getCues().getLast()) {
+                            cues.remove(current);
+                            checked.put(composite, c);
+                        }
+
+                    } else {
+                        checked.put(composite, c);
+                    }
+                }
+
+            } else {
+                var composite = new Pair<>(cue.getLocation(), cue.getPos());
+                if (checked.containsKey(composite)) {
+                    var current = checked.get(composite);
+
+                    if (current.getAction() == FingerActionType.FLICK_UP) {
+                        cues.remove(cue);
+
+                    } else {
+                        cues.remove(current);
+                        checked.put(composite, cue);
+                    }
+
+                } else {
+                    checked.put(composite, cue);
+                }
+
+            }
+
+        }
+
+        checked.clear();
+    }
+
     private void PruneHoldNotes(ChainFingerCue chain) {
         log.debug("------ prune: hold: {}", chain.getLocation());
         var bpm = originalSheet.GetBPM(chain.getLocation().measure());
@@ -172,6 +224,10 @@ public class C4FSheet {
             sb.append("\n");
         }
         return sb.toString();
+    }
+
+    public C4FSheet Clone() {
+        return new C4FSheet(this);
     }
 
     private static ChainFingerCue GenerateHelperTouch(ChainFingerCue cue, double offset, double timeOffset) {

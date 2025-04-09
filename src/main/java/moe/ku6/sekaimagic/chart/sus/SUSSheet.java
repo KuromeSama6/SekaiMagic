@@ -322,6 +322,22 @@ public class SUSSheet {
         return ret;
     }
 
+    public SheetLocation ToSheetLocation(double time) {
+        var timingSection = GetTimingPoint(0, TimingSection.class, null);
+        if (timingSection == null)
+            throw new SUSParseException("No BPM section found.");
+
+        var start = timingPoints.get(timingSection.GetMeasure());
+        var bps = GetBPS(timingSection.GetMeasure());
+        var beats = timingSection.beatsPerBar();
+        var barLength = beats / bps;
+
+        var measure = (int) ((time - start) / barLength) + timingSection.measure();
+        var pos = ((time - start) % barLength) / barLength;
+
+        return new SheetLocation(measure, pos);
+    }
+
     public String ToPrintedString() {
         var sb = new StringBuilder();
         sb.append(Ansi.ansi().fgBrightMagenta().a("SUS Metadata:").reset().newline().toString());

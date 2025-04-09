@@ -58,8 +58,6 @@ SekaiMagic is still in its early stages, and there are quite a few issues that n
 
 - [ ] ADB connection fails on the first attempt after the emulator starts up. Subsequent attempts work fine.
 - [ ] Occasionally, ADB is unable to for forward a system port to the emulator.
-- [ ] Large lag spikes when autoplaying with the "Show taps" and/or "Pointer location" options enabled in developer options.
-- [ ] Touching the screen when autoplay is active causes the native touchscreen to be no longer responsive, even after autoplay has ended.
 - [ ] Occasionally, autoplay will send touch events for all notes in the track immediately after the track starts, causing the touch screen to become unresponsive (probably due to too many touch events being sent at once).
 
 **Autoplay related issues**
@@ -67,8 +65,9 @@ SekaiMagic is still in its early stages, and there are quite a few issues that n
 - [ ] Autoplay does not end automatically at the end of the track and must be stopped manually with `autoplay -s`.
 - [ ] Slide notes with Bézier curves are not being followed properly, causing occasional misses on longer and thinner notes.
 - [ ] Slide notes with zigzags or a lot of movement are being followed the "hard way" and does not resemble a human player. A human player should find a straight path through zigzagging slide notes.
-- [ ] Occasionally, long and zigzagging slide notes are being released early (getting a GREAT at the end).
+- [X] Occasionally, long and zigzagging slide notes are being released early (getting a GREAT at the end).
   - This has been specifically reproduced in the Master difficulty of *Tell Your World*, in the slide note to the right on measure 10. The reasons for this are still unknown.
+    - As of v0.1.1, this issue has been resolved.
 
 There are definitely more issues that we haven't encountered yet, so please report any issues you encounter on the GitHub page. We will try to resolve them as soon as possible.
 

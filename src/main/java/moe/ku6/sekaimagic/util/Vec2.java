@@ -10,8 +10,8 @@ import java.util.List;
 @Getter
 @Setter
 public class Vec2 {
-    private double x;
-    private double y;
+    public double x;
+    public double y;
 
     public Vec2() {
 

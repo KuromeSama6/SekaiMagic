@@ -79,11 +79,15 @@ public class AutoplayCommand implements ICommand<AutoplayCommand.Params> {
 
         log.info(Ansi.ansi().a("Track length: ").fgBrightMagenta().a("%.2f seconds".formatted(sheet.getTotalLength())).reset().toString());
 
+        log.info("Starting autoplay. Creating player...");
+        player = new TrackPlayer(pkg, track, sheet);
         if (args.skipConfirmation || SekaiMagic.getInstance().getConsole().Prompt("Begin autoplay?")) {
-            log.info("Starting autoplay. Creating player...");
-            player = new TrackPlayer(pkg, track, sheet);
-
+            player.Play();
             log.info(Ansi.ansi().fgBrightGreen().a("Autoplay started. Do `autoplay -s` to stop.").reset().toString());
+        } else {
+            log.warn("Autoplay cancelled.");
+            player.close();
+            player = null;
         }
 
     }

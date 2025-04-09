@@ -81,7 +81,6 @@ public class TrackPlayer implements Closeable {
         leadinSoundsRemaining = 0;
         leadinSoundInterval = 1.0 / sheet.GetBPS(0);
         nextLeadinSoundTime = 0;
-        lastTickTime = System.nanoTime();
 
         log.info("Lead in: {} sounds, interval: {} seconds", leadinSoundsRemaining, leadinSoundInterval);
     }
@@ -89,6 +88,9 @@ public class TrackPlayer implements Closeable {
     private void OnTick(int i, int i1, Pointer pointer, int i2, int i3) {
         final double deltaTime = (System.nanoTime() - lastTickTime) / 1_000_000_000.0;
         lastTickTime = System.nanoTime();
+
+        if (!playing) return;
+
         time += deltaTime;
 
         if (leadinSoundsRemaining > 0) {

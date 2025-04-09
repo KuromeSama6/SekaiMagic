@@ -4,14 +4,18 @@ import com.beust.jcommander.Parameter;
 import lombok.extern.slf4j.Slf4j;
 import moe.ku6.sekaimagic.SekaiMagic;
 import moe.ku6.sekaimagic.chart.fingers.C4FSheet;
+import moe.ku6.sekaimagic.chart.fingers.FingerPathDrawer;
 import moe.ku6.sekaimagic.command.ICommand;
 import moe.ku6.sekaimagic.data.SekaiDatabase;
 import moe.ku6.sekaimagic.music.Track;
 import moe.ku6.sekaimagic.music.TrackDifficulty;
 import moe.ku6.sekaimagic.chart.sus.SUSSheet;
 import org.jline.jansi.Ansi;
+import org.joda.time.DateTime;
 
+import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
@@ -68,20 +72,48 @@ public class FingersCommand implements ICommand<FingersCommand.Params> {
                 var difficulty = track.getDifficulty();
                 var packageId = pkg.getId();
 
+
+                var susData = Files.readAllLines(pkg.getTracks().get(difficulty).getFile().toPath());
+                var susSheet = new SUSSheet(pkg, pkg.getTracks().get(difficulty), susData);
+                var c4fSheet = new C4FSheet(susSheet);
+
                 if (args.generate) {
-                    var susData = Files.readAllLines(pkg.getTracks().get(difficulty).getFile().toPath());
-                    var susSheet = new SUSSheet(pkg, pkg.getTracks().get(difficulty), susData);
 
                     var savePath = new File(SekaiMagic.getInstance().getCwd() + "/fingers/%d/%s.c4f".formatted(packageId, difficulty.toString().toLowerCase()));
 
                     if (args.printInfo) log.info(susSheet.ToPrintedString());
-
-                    var c4fSheet = new C4FSheet(susSheet);
                     savePath.getParentFile().mkdirs();
                     if (!savePath.exists()) savePath.createNewFile();
 
                     Files.writeString(savePath.toPath(), c4fSheet.Serialize(), StandardOpenOption.WRITE);
                     log.info(Ansi.ansi().fgBrightGreen().a("Generate: [%d]%s %s: %s".formatted(pkg.getId(), pkg.getTitle(), difficulty, savePath)).reset().toString());
+                    operationPerformed = true;
+                    continue;
+                }
+
+                if (args.visualize) {
+                    log.info("Visualizing finger paths for [%d]%s %s".formatted(pkg.getId(), pkg.getTitle(), difficulty));
+                    try (var drawer = new FingerPathDrawer(c4fSheet)) {
+                        drawer.Draw();
+                        var savePath = new File(SekaiMagic.getInstance().getCwd() + "/fingers_path/%d/%s.svg".formatted(packageId, difficulty.toString().toLowerCase()));
+                        savePath.getParentFile().mkdirs();
+                        if (!savePath.exists()) savePath.createNewFile();
+
+                        log.info("Exporting finger path visualization to %s".formatted(savePath));
+
+                        drawer.Export(savePath);
+
+                        // open it with default program
+                        if (Desktop.isDesktopSupported()) {
+                            Desktop.getDesktop().open(savePath);
+                        }
+
+                    } catch (IOException e) {
+                        log.error("Failed to create finger path drawer: %s".formatted(e.getMessage()));
+                        e.printStackTrace();
+                        return;
+                    }
+
                     operationPerformed = true;
                     continue;
                 }
@@ -105,6 +137,12 @@ public class FingersCommand implements ICommand<FingersCommand.Params> {
                 description = "Generates a finger chart from a track file. Default location for generated files are in the `fingers` directory in the current working directory."
         )
         public boolean generate;
+
+        @Parameter(
+                names = {"-v", "--visualize"},
+                description = "Generates a visualization of the finger paths and saves it as a PNG file."
+        )
+        public boolean visualize;
 
         @Parameter(
                 names = {"-o" , "--output"},
